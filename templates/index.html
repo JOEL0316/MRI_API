@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroScan - Diagnóstico de Tumores Cerebrales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #560bad;
+            --card-bg: #ffffff;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.15);
+            border-radius: 0 0 20px 20px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(67, 97, 238, 0.03);
+            min-height: 180px;
+        }
+
+        .file-label:hover {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: scale(1.01);
+        }
+
+        .file-label i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .result-container {
+            margin-top: 3rem;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .probability {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .no-tumor {
+            color: var(--success);
+        }
+
+        .tumor-detected {
+            color: var(--danger);
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .image-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-container {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9ff;
+            padding: 1rem;
+        }
+
+        .image-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .image-card h3 {
+            padding: 1.5rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .loading-container {
+            width: 100%;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            display: none;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.4s ease;
+        }
+
+        .error-card {
+            background-color: #fff5f7;
+            border-left: 5px solid var(--danger);
+            color: var(--danger);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.5rem 0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .comparison-section {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .comparison-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --card-bg: #1e293b;
+                --text-dark: #f8fafc;
+                --text-light: #94a3b8;
+                --light: #1e293b;
+                --dark: #f8fafc;
+            }
+
+            body {
+                background-color: #0f172a;
+            }
+
+            .file-label {
+                background-color: rgba(67, 97, 238, 0.1);
+                border-color: #334155;
+            }
+
+            .image-container {
+                background: #1e293b;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .image-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-brain"></i> NeuroScan</h1>
+            <p class="subtitle">Diagnóstico avanzado de tumores cerebrales mediante inteligencia artificial</p>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="card">
+            <h2><i class="fas fa-upload"></i> Subir imagen de resonancia magnética</h2>
+            <p>Seleccione una imagen MRI en formato JPG, PNG o DICOM para analizar</p>
+            
+            <form id="predict-form" class="upload-form" method="POST" enctype="multipart/form-data" action="/predict">
+                <div class="form-group">
+                    <input type="file" id="image" name="image" accept="image/*" class="file-input" required>
+                    <label for="image" class="file-label">
+                        <div>
+                            <i class="fas fa-file-image"></i>
+                            <p id="file-name">Haz clic para seleccionar una imagen</p>
+                            <small class="text-muted">Formatos soportados: .jpg, .png, .dcm</small>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="loading-container" id="loading-container">
+                    <div class="loading-bar" id="loading-bar"></div>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-search"></i> Analizar Imagen
+                </button>
+            </form>
+        </div>
+        
+        {% if error %}
+        <div class="error-card">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <div>{{ error }}</div>
+        </div>
+        {% endif %}
+        
+        {% if result %}
+        <div class="result-container">
+            <div class="result-card">
+                <h2 class="result-title"><i class="fas fa-clipboard-check"></i> Resultados del análisis</h2>
+                <p><strong>Diagnóstico:</strong> <span class="{% if result == 'Tumor detectado' %}tumor-detected{% else %}no-tumor{% endif %}">
+                    <i class="fas fa-{% if result == 'Tumor detectado' %}exclamation-circle{% else %}check-circle{% endif %}"></i> {{ result }}
+                </span></p>
+                <p class="probability"><strong>Probabilidad de tumor:</strong> {{ "%.2f"|format(probability*100) }}%</p>
+            </div>
+            
+            <div class="comparison-section">
+                <h3 class="comparison-title"><i class="fas fa-images"></i> Comparación de imágenes</h3>
+                <div class="image-gallery">
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="{{ original_image }}" alt="Imagen procesada" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'fas fa-image\' style=\'font-size:3rem;color:#ccc\'></i><p>Imagen no disponible</p>';">
+                        </div>
+                        <h3><i class="fas fa-image"></i> Imagen Original</h3>
+                    </div>
+                    
+                    {% if mask %}
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="{{ mask }}" alt="Área detectada" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'fas fa-image\' style=\'font-size:3rem;color:#ccc\'></i><p>Máscara no disponible</p>';">
+                        </div>
+                        <h3><i class="fas fa-map-marked-alt"></i> Área Detectada</h3>
+                    </div>
+                    {% endif %}
+                    
+                    {% if overlay_image %}
+                    <div class="image-card">
+                        <div class="image-container">
+                            <img src="{{ overlay_image }}" alt="Tumor destacado" onerror="this.onerror=null;this.parentElement.innerHTML='<i class=\'fas fa-image\' style=\'font-size:3rem;color:#ccc\'></i><p>Superposición no disponible</p>';">
+                        </div>
+                        <h3><i class="fas fa-eye"></i> Tumor Destacado (Rojo)</h3>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p><i class="fas fa-brain"></i> NeuroScan - Sistema de diagnóstico asistido por IA</p>
+            <p>© 2023 Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mostrar nombre del archivo seleccionado
+        document.getElementById('image').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Haz clic para seleccionar una imagen';
+            document.getElementById('file-name').textContent = fileName;
+        });
+        
+        // Animación de carga mejorada
+        document.getElementById('predict-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loadingContainer = document.getElementById('loading-container');
+            const loadingBar = document.getElementById('loading-bar');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // Deshabilitar botón durante el envío
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            loadingContainer.style.display = 'block';
+            loadingBar.style.width = '0';
+            
+            // Animación de carga simulada
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 90) {
+                    clearInterval(interval);
+                } else {
+                    width += 2 + Math.random() * 3;
+                    loadingBar.style.width = Math.min(width, 90) + '%';
+                }
+            }, 100);
+            
+            // Enviar formulario después de breve delay
+            setTimeout(() => {
+                this.submit();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
